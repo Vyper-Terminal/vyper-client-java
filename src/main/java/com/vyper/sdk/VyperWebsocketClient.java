@@ -3,6 +3,7 @@ package com.vyper.sdk;
 import com.vyper.sdk.exceptions.VyperWebsocketException;
 import com.vyper.sdk.models.ChainAction;
 import com.vyper.sdk.models.TokenPair;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -146,6 +147,12 @@ public class VyperWebsocketClient {
     private void handleMessage(String message) {
         if (messageHandler != null) {
             try {
+                JsonNode jsonNode = objectMapper.readTree(message);
+                
+                if (jsonNode.has("action")) {
+                    return;
+                }
+
                 Object parsedData = objectMapper.readValue(message, Object.class);
                 Object convertedData = convertMessage(parsedData);
                 messageHandler.accept(convertedData);
