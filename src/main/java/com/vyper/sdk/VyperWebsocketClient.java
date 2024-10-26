@@ -150,14 +150,22 @@ public class VyperWebsocketClient {
                 JsonNode jsonNode = objectMapper.readTree(message);
                 
                 if (jsonNode.has("action")) {
+                    System.out.println("Subscription response: " + message);
+                    messageHandler.accept(message);
                     return;
                 }
 
-                Object parsedData = objectMapper.readValue(message, Object.class);
-                Object convertedData = convertMessage(parsedData);
-                messageHandler.accept(convertedData);
+                try {
+                    Object convertedData = convertMessage(jsonNode);
+                    messageHandler.accept(convertedData);
+                } catch (Exception e) {
+                    System.out.println("Conversion failed, sending raw message: " + e.getMessage());
+                    messageHandler.accept(message);
+                }
             } catch (Exception e) {
                 System.err.println("Vyper Websocket | Error parsing message: " + e.getMessage());
+                System.err.println("Raw message was: " + message);
+                e.printStackTrace();
             }
         }
     }
