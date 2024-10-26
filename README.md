@@ -6,16 +6,16 @@ A Java SDK for interacting with the [Vyper API](https://build.vyper.trade/). Thi
 
 ## Table of Contents
 
-- [Vyper API Java SDK](#vyper-api-java-sdk)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-    - [Using npm:](#using-npm)
-  - [Quick Start](#quick-start)
-  - [Usage](#usage)
-    - [Client Initialization](#client-initialization)
-    - [REST API Example](#rest-api-example)
-    - [WebSocket API Example](#websocket-api-example)
-  - [API Documentation](#api-documentation)
+-   [Vyper API Java SDK](#vyper-api-java-sdk)
+    -   [Table of Contents](#table-of-contents)
+    -   [Installation](#installation)
+        -   [Using npm:](#using-npm)
+    -   [Quick Start](#quick-start)
+    -   [Usage](#usage)
+        -   [Client Initialization](#client-initialization)
+        -   [REST API Example](#rest-api-example)
+        -   [WebSocket API Example](#websocket-api-example)
+    -   [API Documentation](#api-documentation)
 
 ## Installation
 
@@ -118,10 +118,11 @@ public class Main {
 
             // Connect to the WebSocket and subscribe to token events
             wsClient.connect(FeedType.TOKEN_EVENTS);
-            wsClient.subscribe(FeedType.TOKEN_EVENTS, new VyperWebsocketClient.TokenSubscriptionMessage() {{
-                action = SubscriptionMessageType.SUBSCRIBE;
-                types = Arrays.asList(SubscriptionType.PUMPFUN_TOKENS);
-            }});
+            wsClient.subscribe(
+                FeedType.TOKEN_EVENTS,
+                SubscriptionMessageType.SUBSCRIBE,
+                Arrays.asList(SubscriptionType.PUMPFUN_TOKENS)
+            );
 
             System.out.println("Subscribed to token events");
 
