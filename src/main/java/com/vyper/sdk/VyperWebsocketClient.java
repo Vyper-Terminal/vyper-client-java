@@ -44,25 +44,47 @@ public class VyperWebsocketClient {
     }
 
     public enum SubscriptionMessageType {
-        SUBSCRIBE,
-        UNSUBSCRIBE
+        SUBSCRIBE("subscribe"),
+        UNSUBSCRIBE("unsubscribe");
+
+        private final String value;
+
+        SubscriptionMessageType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
     public enum SubscriptionType {
-        PUMPFUN_TOKENS,
-        RAYDIUM_AMM_TOKENS,
-        RAYDIUM_CPMM_TOKENS,
-        RAYDIUM_CLMM_TOKENS
+        PUMPFUN_TOKENS("PumpfunTokens"),
+        RAYDIUM_AMM_TOKENS("RaydiumAmmTokens"),
+        RAYDIUM_CPMM_TOKENS("RaydiumCpmmTokens"),
+        RAYDIUM_CLMM_TOKENS("RaydiumClmmTokens");
+
+        private final String value;
+
+        SubscriptionType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
     public static class TokenSubscriptionMessage {
-        public SubscriptionMessageType action;
-        public List<SubscriptionType> types;
-    }
+        public String action;
+        public List<String> types;
 
-    public static class WalletSubscriptionMessage {
-        public SubscriptionMessageType action;
-        public List<String> wallets;
+        public TokenSubscriptionMessage(SubscriptionMessageType action, List<SubscriptionType> types) {
+            this.action = action.getValue();
+            this.types = types.stream()
+                            .map(SubscriptionType::getValue)
+                            .collect(java.util.stream.Collectors.toList());
+        }
     }
 
     public void connect(FeedType feedType) throws VyperWebsocketException {
@@ -116,15 +138,15 @@ public class VyperWebsocketClient {
         }
     }    
 
-    public void subscribe(FeedType feedType, Object subscriptionMessage) throws VyperWebsocketException {
+    public void subscribe(FeedType feedType, SubscriptionMessageType action, List<SubscriptionType> types) throws VyperWebsocketException {
         ensureConnected();
 
-        if (client == null || !client.isOpen()) {
-            throw new VyperWebsocketException("Not connected to WebSocket");
-        }
-        if (feedType == FeedType.TOKEN_EVENTS || feedType == FeedType.WALLET_EVENTS) {
+        if (feedType == FeedType.TOKEN_EVENTS) {
             try {
-                client.send(objectMapper.writeValueAsString(subscriptionMessage));
+                TokenSubscriptionMessage message = new TokenSubscriptionMessage(action, types);
+                String jsonMessage = objectMapper.writeValueAsString(message);
+                System.out.println("Sending subscription message: " + jsonMessage);
+                client.send(jsonMessage);
             } catch (Exception e) {
                 throw new VyperWebsocketException("Failed to subscribe: " + e.getMessage());
             }

@@ -6,7 +6,7 @@
 
     <groupId>com.vyper</groupId>
     <artifactId>vyper-client-java</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.5</version>
     <name>Vyper Client Java</name>
     <description>A Java SDK for the Vyper API</description>
     <url>https://github.com/Vyper-Terminal/vyper-client-java</url>
